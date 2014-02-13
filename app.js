@@ -47,16 +47,13 @@ mongoose.connect('mongodb://' + process.env.MONGODB_USERNAME + ':' + process.env
 var Schema = mongoose.Schema
 
 var bitcoinSchema = new Schema({
-	// date: {
-	//  default: new Date()
-	// },
-	// trade: {},
-	// ticker: {},
+	data: Schema.Types.Mixed
 }, {
 	capped: {
-		max: 2000
+		size: 268435456
 	},
-	strict: false
+	strict: false,
+	toJSON: true
 
 })
 
@@ -69,15 +66,32 @@ var btc = gox.createStream({
 
 btc.on('data', function(data) {
 
-	console.log(JSON.parse(data))
+	// console.log(JSON.parse(data))
 	delete data._id
 
-	var ticker = new bitcoinModel(JSON.parse(data))
+	var ticker = new bitcoinModel({
+		data: JSON.parse(data)
+	})
 
 	ticker.save(function(err, result) {
 		if (err) return console.log(err);
-		else console.log(result);
+		// else console.log(result);
 		// saved!
 	})
 
 })
+
+// test
+// bitcoinModel.find().sort({
+// 	'data.ticker.now': -1
+// }).limit(2).exec(function(err, posts) {
+// 	if (err)
+// 		console.log(err)
+// 	else {
+
+// 		posts.forEach(function(post) {
+// 			console.log(post.data.ticker.now)
+// 			console.log(new Date(parseInt(post.data.ticker.now) / 1000))
+// 		})
+// 	}
+// })

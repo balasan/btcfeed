@@ -3,7 +3,7 @@
  */
 
 exports.index = function(req, res) {
-	res.render('index', {
-		title: 'BTCFEED'
-	});
+  res.render('index', {
+    title: 'BTCFEED'
+  });
 };

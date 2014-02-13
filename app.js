@@ -33,7 +33,7 @@ app.configure('development', function() {
 	app.use(express.errorHandler());
 });
 
-app.get('/', routes);
+app.get('/', routes.index);
 
 server.listen(app.get('port'), function() {
 	console.log("Express server listening on port " + app.get('port'));
@@ -99,7 +99,7 @@ var minutes = 30,
 
 setInterval(function() {
 	var options = {
-		host: 'myapp.herokuapp.com'
+		host: 'btcfeed.herokuapp.com'
 	};
 	http.get(options, function(http_res) {
 		console.log("Sent http request to myapp.herokuapp.com to stay awake.");

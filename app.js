@@ -102,7 +102,7 @@ setInterval(function() {
 		host: 'btcfeed.herokuapp.com'
 	};
 	http.get(options, function(http_res) {
-		console.log("Sent http request to myapp.herokuapp.com to stay awake.");
+		console.log("Sent http request to btcfeed.herokuapp.com to stay awake.");
 	});
 }, the_interval);
 

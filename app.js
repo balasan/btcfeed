@@ -4,7 +4,6 @@
 
 var express = require('express'),
 	routes = require('./routes'),
-	user = require('./routes/user'),
 	http = require('http'),
 	path = require('path'),
 	gox = require('goxstream'),
@@ -13,7 +12,9 @@ var express = require('express'),
 
 var app = express();
 var server = http.createServer(app);
-var io = require('socket.io').listen(server);
+// var io = require('socket.io').listen(server, {
+// 	log: false
+// });
 
 
 app.configure(function() {
@@ -32,7 +33,7 @@ app.configure('development', function() {
 	app.use(express.errorHandler());
 });
 
-// app.get('/users', user.list);
+app.get('/', routes);
 
 server.listen(app.get('port'), function() {
 	console.log("Express server listening on port " + app.get('port'));
@@ -93,6 +94,17 @@ app.get('/data/:limit', function(req, res) {
 });
 
 
+var minutes = 30,
+	the_interval = minutes * 60 * 1000;
+
+setInterval(function() {
+	var options = {
+		host: 'myapp.herokuapp.com'
+	};
+	http.get(options, function(http_res) {
+		console.log("Sent http request to myapp.herokuapp.com to stay awake.");
+	});
+}, the_interval);
 
 // test
 // bitcoinModel.find().sort({

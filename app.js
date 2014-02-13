@@ -7,7 +7,6 @@ var express = require('express'),
 	user = require('./routes/user'),
 	http = require('http'),
 	path = require('path'),
-	// socket = require('./routes/socket'),
 	gox = require('goxstream'),
 	mongoose = require('mongoose');
 
@@ -33,8 +32,7 @@ app.configure('development', function() {
 	app.use(express.errorHandler());
 });
 
-app.get('/', routes.index);
-app.get('/users', user.list);
+// app.get('/users', user.list);
 
 server.listen(app.get('port'), function() {
 	console.log("Express server listening on port " + app.get('port'));
@@ -66,20 +64,35 @@ var btc = gox.createStream({
 
 btc.on('data', function(data) {
 
-	// console.log(JSON.parse(data))
-	delete data._id
-
 	var ticker = new bitcoinModel({
 		data: JSON.parse(data)
 	})
 
 	ticker.save(function(err, result) {
 		if (err) return console.log(err);
-		// else console.log(result);
-		// saved!
 	})
 
 })
+
+
+app.get('/data/:limit', function(req, res) {
+	var limit = 1000;
+	if (req.params.limit)
+		limit = req.params.limit
+	bitcoinModel.find().sort({
+		'data.ticker.now': -1
+	}).limit(limit).exec(function(err, tickers) {
+		if (err) {
+			console.log(err)
+			res.json({})
+		} else {
+			console.log(tickers)
+			res.json(tickers)
+		}
+	})
+});
+
+
 
 // test
 // bitcoinModel.find().sort({

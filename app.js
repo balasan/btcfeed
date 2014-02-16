@@ -94,6 +94,7 @@ app.get('/data/:limit', function(req, res) {
 });
 
 
+//HEROKU KEEP AWAKE
 var minutes = 30,
 	the_interval = minutes * 60 * 1000;
 
@@ -105,6 +106,8 @@ setInterval(function() {
 		console.log("Sent http request to btcfeed.herokuapp.com to stay awake.");
 	});
 }, the_interval);
+
+
 
 // test
 // bitcoinModel.find().sort({

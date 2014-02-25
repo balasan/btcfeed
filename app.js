@@ -6,7 +6,7 @@ var express = require('express'),
 	routes = require('./routes'),
 	http = require('http'),
 	path = require('path'),
-	gox = require('goxstream'),
+	// gox = require('goxstream'),
 	mongoose = require('mongoose');
 
 
@@ -45,35 +45,174 @@ mongoose.connect('mongodb://' + process.env.MONGODB_USERNAME + ':' + process.env
 
 var Schema = mongoose.Schema
 
-var bitcoinSchema = new Schema({
-	data: Schema.Types.Mixed
+var secondSchema = new Schema({
+	timestamp: {
+		type: [Date],
+		index: true
+	},
+	last: Number,
+	bid: Number,
+	ask: Number
 }, {
 	capped: {
-		size: 268435456
+		size: 52428800
 	},
-	strict: false,
-	toJSON: true
-
 })
 
-var bitcoinModel = mongoose.model('bitcoinModel', bitcoinSchema);
-
-var btc = gox.createStream({
-	trade: false,
-	ticker: true
+var minuteSchema = new Schema({
+	timestamp: {
+		type: [Date],
+		index: true
+	},
+	last: Number,
+	bid: Number,
+	ask: Number
+}, {
+	capped: {
+		size: 52428800
+	},
+	// strict: false,
 })
 
-btc.on('data', function(data) {
-
-	var ticker = new bitcoinModel({
-		data: JSON.parse(data)
-	})
-
-	ticker.save(function(err, result) {
-		if (err) return console.log(err);
-	})
-
+var hourSchema = new Schema({
+	timestamp: {
+		type: [Date],
+		index: true
+	},
+	last: Number,
+	bid: Number,
+	ask: Number
+}, {
+	capped: {
+		size: 52428800
+	},
+	// strict: false,
 })
+
+var daySchema = new Schema({
+	timestamp: {
+		type: [Date],
+		index: true
+	},
+	last: Number,
+	bid: Number,
+	ask: Number,
+	high: Number,
+	low: Number,
+	volume: Number
+}, {
+	capped: {
+		size: 52428800
+	},
+	// strict: false,
+})
+
+var secondModel = mongoose.model('secondModel', secondSchema);
+var minuteModel = mongoose.model('minuteModel', minuteSchema);
+var hourModel = mongoose.model('hourModel', hourSchema);
+var dayModel = mongoose.model('dayModel', daySchema);
+
+// var btc = gox.createStream({
+// 	trade: false,
+// 	ticker: true
+// })
+
+// btc.on('data', function(data) {
+
+// 	var ticker = new bitcoinModel({
+// 		data: JSON.parse(data)
+// 	})
+
+// 	ticker.save(function(err, result) {
+// 		if (err) return console.log(err);
+// 	})
+
+// })
+
+
+var getData, seconds, data_interval, counter;
+
+seconds = 5;
+
+data_interval = seconds * 1000;
+
+counter = 0;
+
+var filterData = function(data) {
+	data.timestamp = new Date(parseInt(data.timestamp) * 1000);
+	return data;
+	// data.last = parseFloat(data.last);
+}
+
+var lastMinute = new Date(0);
+var lastHour = new Date(0);
+var lastDay = new Date(0);
+
+getData = function() {
+	var url;
+	url = "http://www.bitstamp.net/api/ticker/";
+	return http.get(url, function(res) {
+		var body;
+		body = "";
+		res.on("data", function(chunk) {
+			body += chunk;
+		});
+		res.on("end", function() {
+			var data;
+			data = JSON.parse(body);
+
+			data = filterData(data);
+
+			// console.log("update sec")
+
+			var sticker = new secondModel(data)
+			sticker.save(function(err, result) {
+				if (err) return console.log(err);
+				// else console.log(result)
+			})
+
+			if (data.timestamp - lastMinute > 59 * 1000) {
+				// console.log("update minutes")
+				lastMinute = data.timestamp;
+				var mticker = new minuteModel(data)
+				mticker.save(function(err, result) {
+					if (err) return console.log(err);
+					// else console.log(result)
+				})
+			}
+
+
+			if (data.timestamp - lastHour > 59 * 59 * 1000) {
+				// console.log("update hours")
+				lastHour = data.timestamp;
+				var hticker = new hourModel(data)
+				hticker.save(function(err, result) {
+					if (err) return console.log(err);
+					// else console.log(result)
+				})
+			}
+
+			if (data.timestamp - lastDay > 23 * 59 * 59 * 1000) {
+				// console.log("update days")
+				lastDay = data.timestamp;
+				var dticker = new dayModel(data)
+				dticker.save(function(err, result) {
+					if (err) return console.log(err);
+					// else console.log(result)
+				})
+			}
+
+		});
+	}).on("error", function(e) {
+		console.log("Got error: ", e);
+	});
+};
+
+getData()
+
+setInterval(getData, data_interval)
+
+
 
 
 app.get('/data/:limit', function(req, res) {
@@ -110,6 +249,22 @@ setInterval(function() {
 
 
 // test
+
+secondModel.find().sort({
+	'timestamp': -1
+}).limit(2).exec(function(err, data) {
+	if (err)
+		console.log(err)
+	else {
+
+		data.forEach(function(d) {
+			// console.log(d.timestamp)
+			console.log(d)
+			// console.log(new Date(parseInt(post.data.ticker.now) / 1000))
+		})
+	}
+})
+
 // bitcoinModel.find().sort({
 // 	'data.ticker.now': -1
 // }).limit(2).exec(function(err, posts) {

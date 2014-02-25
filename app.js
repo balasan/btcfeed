@@ -250,20 +250,20 @@ setInterval(function() {
 
 // test
 
-secondModel.find().sort({
-	'timestamp': -1
-}).limit(2).exec(function(err, data) {
-	if (err)
-		console.log(err)
-	else {
+// secondModel.find().sort({
+// 	'timestamp': -1
+// }).limit(2).exec(function(err, data) {
+// 	if (err)
+// 		console.log(err)
+// 	else {
 
-		data.forEach(function(d) {
-			// console.log(d.timestamp)
-			console.log(d)
-			// console.log(new Date(parseInt(post.data.ticker.now) / 1000))
-		})
-	}
-})
+// 		data.forEach(function(d) {
+// 			// console.log(d.timestamp)
+// 			console.log(d)
+// 			// console.log(new Date(parseInt(post.data.ticker.now) / 1000))
+// 		})
+// 	}
+// })
 
 // bitcoinModel.find().sort({
 // 	'data.ticker.now': -1

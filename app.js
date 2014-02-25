@@ -159,8 +159,13 @@ getData = function() {
 		});
 		res.on("end", function() {
 			var data;
-			data = JSON.parse(body);
+			try {
+				data = JSON.parse(body);
+			} catch (error) {
+				console.log(error)
+				return;
 
+			}
 			data = filterData(data);
 
 			// console.log("update sec")

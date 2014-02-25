@@ -49,7 +49,7 @@ var Schema = mongoose.Schema
 
 var secondSchema = new Schema({
 	timestamp: {
-		type: [Date],
+		type: Date,
 		index: true
 	},
 	last: Number,
@@ -63,7 +63,7 @@ var secondSchema = new Schema({
 
 var minuteSchema = new Schema({
 	timestamp: {
-		type: [Date],
+		type: Date,
 		index: true
 	},
 	last: Number,
@@ -78,7 +78,7 @@ var minuteSchema = new Schema({
 
 var hourSchema = new Schema({
 	timestamp: {
-		type: [Date],
+		type: Date,
 		index: true
 	},
 	last: Number,
@@ -93,7 +93,7 @@ var hourSchema = new Schema({
 
 var daySchema = new Schema({
 	timestamp: {
-		type: [Date],
+		type: Date,
 		index: true
 	},
 	last: Number,

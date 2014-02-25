@@ -146,9 +146,11 @@ var filterData = function(data) {
 	// data.last = parseFloat(data.last);
 }
 
+var lastSecond = new Date(0);
 var lastMinute = new Date(0);
 var lastHour = new Date(0);
 var lastDay = new Date(0);
+
 
 getData = function() {
 	var url;
@@ -176,6 +178,12 @@ getData = function() {
 
 			}
 			data = filterData(data);
+			// console.log(data)
+			if (data.timestamp <= lastSecond) {
+				console.log('dup')
+				return
+			}
+			lastSecond = data.timestamp;
 			// console.log("update sec")
 
 			var sticker = new secondModel(data)

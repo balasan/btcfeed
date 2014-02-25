@@ -162,7 +162,7 @@ getData = function() {
 			try {
 				data = JSON.parse(body);
 			} catch (error) {
-				console.log(data)
+				console.log(body)
 				console.log(error)
 				return;
 

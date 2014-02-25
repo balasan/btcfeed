@@ -5,6 +5,8 @@
 var express = require('express'),
 	routes = require('./routes'),
 	http = require('http'),
+	https = require('https'),
+
 	path = require('path'),
 	// gox = require('goxstream'),
 	mongoose = require('mongoose');
@@ -150,8 +152,14 @@ var lastDay = new Date(0);
 
 getData = function() {
 	var url;
-	url = "http://www.bitstamp.net/api/ticker/";
-	return http.get(url, function(res) {
+	url = "https://www.bitstamp.net:443/api/ticker/";
+	// var options = {
+	// 	host: 'bitstamp.net',
+	// 	// port: 80,
+	// 	path: '/api/ticker/',
+	// 	method: 'GET',
+	// }
+	return https.get(url, function(res) {
 		var body;
 		body = "";
 		res.on("data", function(chunk) {
@@ -168,7 +176,6 @@ getData = function() {
 
 			}
 			data = filterData(data);
-
 			// console.log("update sec")
 
 			var sticker = new secondModel(data)
